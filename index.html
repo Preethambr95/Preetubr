@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Voice Recorder & Karaoke Studio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="#00D4FF" stroke-width="2"/>
+                    <path d="M20 10V30M15 20H25" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h1>VoiceStudio Pro</h1>
+            </div>
+            <div class="header-info">
+                <span class="recording-time" id="recordingTime">00:00</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="recorder">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 16.91c-1.48 1.46-3.51 2.36-5.7 2.36-2.2 0-4.23-.9-5.7-2.36M19 12h2c0 2.04-.645 3.93-1.74 5.48"/>
+                        <path d="M2 12h2c0-2.96 2.25-5.44 5-5.92"/>
+                    </svg>
+                    Recorder
+                </button>
+                <button class="tab-btn" data-tab="karaoke">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        <path d="M9.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM14.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM12 16c-2.33 0-4.31-1.46-5.11-3.5H6.9c.89 1.56 2.64 2.5 4.6 2.5s3.71-.94 4.6-2.5h1.01c-.8 2.04-2.78 3.5-5.11 3.5z"/>
+                    </svg>
+                    Karaoke
+                </button>
+                <button class="tab-btn" data-tab="library">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/>
+                    </svg>
+                    Library
+                </button>
+            </div>
+
+            <!-- Recorder Tab -->
+            <section class="tab-content active" id="recorder-tab">
+                <div class="recorder-section">
+                    <!-- Waveform Visualizer -->
+                    <div class="visualizer-container">
+                        <canvas id="visualizer"></canvas>
+                        <div class="visualizer-text">
+                            <p id="visualizerStatus">Ready to Record</p>
+                        </div>
+                    </div>
+
+                    <!-- Recording Controls -->
+                    <div class="controls-section">
+                        <div class="input-level">
+                            <label>Microphone Level</label>
+                            <div class="level-display">
+                                <div class="level-bar" id="levelBar"></div>
+                            </div>
+                            <input type="range" id="micLevel" min="0" max="100" value="100" class="level-slider">
+                        </div>
+
+                        <div class="record-buttons">
+                            <button class="btn btn-secondary" id="startBtn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5h3V9h4v3h3l-5 5z"/>
+                                </svg>
+                                Start Recording
+                            </button>
+                            <button class="btn btn-danger" id="stopBtn" disabled>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4 11h-8v-2h8v2z"/>
+                                </svg>
+                                Stop Recording
+                            </button>
+                        </div>
+
+                        <div class="secondary-controls">
+                            <button class="btn btn-small" id="pauseBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                                </svg>
+                                Pause
+                            </button>
+                            <button class="btn btn-small" id="resumeBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                Resume
+                            </button>
+                            <button class="btn btn-small" id="discardBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                </svg>
+                                Discard
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Playback Section -->
+                    <div class="playback-section" id="playbackSection" style="display: none;">
+                        <h3>Playback</h3>
+                        <audio id="recordedAudio" controls></audio>
+                        <div class="playback-buttons">
+                            <button class="btn btn-success" id="saveBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                </svg>
+                                Save Recording
+                            </button>
+                            <button class="btn btn-warning" id="retakeBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 10c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm10 0c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM7 19h10v-1H7v1zm0-5h10v-1H7v1z"/>
+                                </svg>
+                                Retake
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Karaoke Tab -->
+            <section class="tab-content" id="karaoke-tab">
+                <div class="karaoke-section">
+                    <!-- Background Music Upload -->
+                    <div class="karaoke-setup">
+                        <h2>Karaoke Studio</h2>
+                        
+                        <div class="upload-area" id="uploadArea">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <h3>Drop Karaoke Track Here</h3>
+                            <p>or click to browse</p>
+                            <input type="file" id="karaokeFile" accept="audio/*" style="display: none;">
+                        </div>
+
+                        <!-- Karaoke Controls -->
+                        <div class="karaoke-player" id="karaokePlayer" style="display: none;">
+                            <h3>Now Playing: <span id="trackName">Track Name</span></h3>
+                            <audio id="karaokeAudio" controls></audio>
+
+                            <div class="karaoke-controls">
+                                <div class="control-group">
+                                    <label>Background Volume</label>
+                                    <div class="volume-control">
+                                        <input type="range" id="bgVolume" min="0" max="100" value="50" class="volume-slider">
+                                        <span class="volume-value" id="bgVolumeValue">50%</span>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Vocal Volume</label>
+                                    <div class="volume-control">
+                                        <input type="range" id="vocalVolume" min="0" max="100" value="100" class="volume-slider">
+                                        <span class="volume-value" id="vocalVolumeValue">100%</span>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Playback Speed</label>
+                                    <div class="speed-buttons">
+                                        <button class="speed-btn" data-speed="0.75">0.75x</button>
+                                        <button class="speed-btn active" data-speed="1">Normal</button>
+                                        <button class="speed-btn" data-speed="1.25">1.25x</button>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Pitch Control</label>
+                                    <input type="range" id="pitchControl" min="-12" max="12" value="0" class="pitch-slider">
+                                    <span class="pitch-value" id="pitchValue">0 semitones</span>
+                                </div>
+                            </div>
+
+                            <div class="karaoke-recording">
+                                <div class="karaoke-recording-status">
+                                    <span id="karaokeRecordingTime">00:00</span>
+                                </div>
+                                <button class="btn btn-secondary" id="startKaraokeRecordBtn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                                        <path d="M17 16.91c-1.48 1.46-3.51 2.36-5.7 2.36-2.2 0-4.23-.9-5.7-2.36"/>
+                                    </svg>
+                                    Start Singing
+                                </button>
+                                <button class="btn btn-danger" id="stopKaraokeRecordBtn" disabled>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M6 6h12v12H6z"/>
+                                    </svg>
+                                    Stop Singing
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Library Tab -->
+            <section class="tab-content" id="library-tab">
+                <div class="library-section">
+                    <h2>Recording Library</h2>
+                    <div class="library-controls">
+                        <input type="text" id="searchRecordings" placeholder="Search recordings...">
+                        <button class="btn btn-small" id="clearLibraryBtn">Clear All</button>
+                    </div>
+                    <div class="recordings-list" id="recordingsList">
+                        <p class="empty-state">No recordings yet. Start recording to build your library!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Voice Recorder & Karaoke Studio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="#00D4FF" stroke-width="2"/>
+                    <path d="M20 10V30M15 20H25" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h1>VoiceStudio Pro</h1>
+            </div>
+            <div class="header-info">
+                <span class="recording-time" id="recordingTime">00:00</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="recorder">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 16.91c-1.48 1.46-3.51 2.36-5.7 2.36-2.2 0-4.23-.9-5.7-2.36M19 12h2c0 2.04-.645 3.93-1.74 5.48"/>
+                        <path d="M2 12h2c0-2.96 2.25-5.44 5-5.92"/>
+                    </svg>
+                    Recorder
+                </button>
+                <button class="tab-btn" data-tab="karaoke">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        <path d="M9.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM14.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM12 16c-2.33 0-4.31-1.46-5.11-3.5H6.9c.89 1.56 2.64 2.5 4.6 2.5s3.71-.94 4.6-2.5h1.01c-.8 2.04-2.78 3.5-5.11 3.5z"/>
+                    </svg>
+                    Karaoke
+                </button>
+                <button class="tab-btn" data-tab="library">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/>
+                    </svg>
+                    Library
+                </button>
+            </div>
+
+            <!-- Recorder Tab -->
+            <section class="tab-content active" id="recorder-tab">
+                <div class="recorder-section">
+                    <!-- Waveform Visualizer -->
+                    <div class="visualizer-container">
+                        <canvas id="visualizer"></canvas>
+                        <div class="visualizer-text">
+                            <p id="visualizerStatus">Ready to Record</p>
+                        </div>
+                    </div>
+
+                    <!-- Recording Controls -->
+                    <div class="controls-section">
+                        <div class="input-level">
+                            <label>Microphone Level</label>
+                            <div class="level-display">
+                                <div class="level-bar" id="levelBar"></div>
+                            </div>
+                            <input type="range" id="micLevel" min="0" max="100" value="100" class="level-slider">
+                        </div>
+
+                        <div class="record-buttons">
+                            <button class="btn btn-secondary" id="startBtn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5h3V9h4v3h3l-5 5z"/>
+                                </svg>
+                                Start Recording
+                            </button>
+                            <button class="btn btn-danger" id="stopBtn" disabled>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4 11h-8v-2h8v2z"/>
+                                </svg>
+                                Stop Recording
+                            </button>
+                        </div>
+
+                        <div class="secondary-controls">
+                            <button class="btn btn-small" id="pauseBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                                </svg>
+                                Pause
+                            </button>
+                            <button class="btn btn-small" id="resumeBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                Resume
+                            </button>
+                            <button class="btn btn-small" id="discardBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                </svg>
+                                Discard
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Playback Section -->
+                    <div class="playback-section" id="playbackSection" style="display: none;">
+                        <h3>Playback</h3>
+                        <audio id="recordedAudio" controls></audio>
+                        <div class="playback-buttons">
+                            <button class="btn btn-success" id="saveBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                </svg>
+                                Save Recording
+                            </button>
+                            <button class="btn btn-warning" id="retakeBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 10c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm10 0c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM7 19h10v-1H7v1zm0-5h10v-1H7v1z"/>
+                                </svg>
+                                Retake
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Karaoke Tab -->
+            <section class="tab-content" id="karaoke-tab">
+                <div class="karaoke-section">
+                    <h2>🎵 Karaoke Studio</h2>
+                    
+                    <!-- Two Column Layout -->
+                    <div class="karaoke-container">
+                        <!-- Left: Karaoke Library -->
+                        <div class="karaoke-library-panel">
+                            <h3>My Karaoke Collection</h3>
+                            
+                            <!-- Upload New Karaoke -->
+                            <div class="upload-area-small" id="uploadAreaSmall">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <p>Add Karaoke</p>
+                                <input type="file" id="karaokeFile" accept="audio/*" style="display: none;">
+                            </div>
+
+                            <!-- Karaoke List -->
+                            <div class="karaoke-list-container">
+                                <input type="text" id="searchKaraoke" placeholder="Search karaoke...">
+                                <div class="karaoke-list" id="karaokeList">
+                                    <p class="empty-state">No karaoke tracks yet. Upload one to get started!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Player & Recording -->
+                        <div class="karaoke-player-panel">
+                            <div class="karaoke-player" id="karaokePlayer" style="display: none;">
+                                <h3>🎤 Now Singing: <span id="trackName">Track Name</span></h3>
+                                <audio id="karaokeAudio" controls></audio>
+
+                                <div class="karaoke-controls">
+                                    <div class="control-group">
+                                        <label>Background Volume</label>
+                                        <div class="volume-control">
+                                            <input type="range" id="bgVolume" min="0" max="100" value="50" class="volume-slider">
+                                            <span class="volume-value" id="bgVolumeValue">50%</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label>Vocal Volume</label>
+                                        <div class="volume-control">
+                                            <input type="range" id="vocalVolume" min="0" max="100" value="100" class="volume-slider">\n                                            <span class="volume-value" id="vocalVolumeValue">100%</span>\n                                        </div>\n                                    </div>\n\n                                    <div class=\"control-group\">\n                                        <label>Playback Speed</label>\n                                        <div class=\"speed-buttons\">\n                                            <button class=\"speed-btn\" data-speed=\"0.75\">0.75x</button>\n                                            <button class=\"speed-btn active\" data-speed=\"1\">Normal</button>\n                                            <button class=\"speed-btn\" data-speed=\"1.25\">1.25x</button>\n                                        </div>\n                                    </div>\n\n                                    <div class=\"control-group\">\n                                        <label>Pitch Control</label>\n                                        <input type=\"range\" id=\"pitchControl\" min=\"-12\" max=\"12\" value=\"0\" class=\"pitch-slider\">\n                                        <span class=\"pitch-value\" id=\"pitchValue\">0 semitones</span>\n                                    </div>\n                                </div>\n\n                                <div class=\"karaoke-recording\">\n                                    <div class=\"karaoke-recording-status\">\n                                        <span id=\"karaokeRecordingTime\">00:00</span>\n                                    </div>\n                                    <button class=\"btn btn-secondary\" id=\"startKaraokeRecordBtn\">\n                                        <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\">\n                                            <path d=\"M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z\"/>\n                                            <path d=\"M17 16.91c-1.48 1.46-3.51 2.36-5.7 2.36-2.2 0-4.23-.9-5.7-2.36\"/>\n                                        </svg>\n                                        Start Singing\n                                    </button>\n                                    <button class=\"btn btn-danger\" id=\"stopKaraokeRecordBtn\" disabled>\n                                        <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\">\n                                            <path d=\"M6 6h12v12H6z\"/>\n                                        </svg>\n                                        Stop Singing\n                                    </button>\n                                </div>\n                            </div>\n\n                            <div class=\"empty-karaoke-player\" id=\"emptyKaraokePlayer\">\n                                <svg width=\"64\" height=\"64\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\">\n                                    <circle cx=\"12\" cy=\"12\" r=\"10\"></circle>\n                                    <path d=\"M8 14s1.5 2 4 2 4-2 4-2\"></path>\n                                    <line x1=\"9\" y1=\"9\" x2=\"9\" y2=\"9.01\"></line>\n                                    <line x1=\"15\" y1=\"9\" x2=\"15\" y2=\"9.01\"></line>\n                                </svg>\n                                <h4>Select a Karaoke Track</h4>\n                                <p>Choose a track from your collection to start singing!</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </section>\n\n            <!-- Library Tab -->\n            <section class=\"tab-content\" id=\"library-tab\">\n                <div class=\"library-section\">\n                    <h2>📚 Recording Library</h2>\n                    <div class=\"library-controls\">\n                        <input type=\"text\" id=\"searchRecordings\" placeholder=\"Search recordings...\">\n                        <button class=\"btn btn-small\" id=\"clearLibraryBtn\">Clear All</button>\n                    </div>\n                    <div class=\"recordings-list\" id=\"recordingsList\">\n                        <p class=\"empty-state\">No recordings yet. Start recording to build your library!</p>\n                    </div>\n                </div>\n            </section>\n        </main>\n    </div>\n\n    <!-- Toast Notification -->\n    <div class=\"toast\" id=\"toast\"></div>\n\n    <script src=\"script.js\"></script>\n</body>\n</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Voice Recorder & Karaoke Studio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="#00D4FF" stroke-width="2"/>
+                    <path d="M20 10V30M15 20H25" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h1>VoiceStudio Pro</h1>
+            </div>
+            <div class="header-info">
+                <span class="recording-time" id="recordingTime">00:00</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="recorder">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 16.91c-1.48 1.46-3.51 2.36-5.7 2.36-2.2 0-4.23-.9-5.7-2.36M19 12h2c0 2.04-.645 3.93-1.74 5.48"/>
+                        <path d="M2 12h2c0-2.96 2.25-5.44 5-5.92"/>
+                    </svg>
+                    Recorder
+                </button>
+                <button class="tab-btn" data-tab="karaoke">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        <path d="M9.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM14.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM12 16c-2.33 0-4.31-1.46-5.11-3.5H6.9c.89 1.56 2.64 2.5 4.6 2.5s3.71-.94 4.6-2.5h1.01c-.8 2.04-2.78 3.5-5.11 3.5z"/>
+                    </svg>
+                    Karaoke
+                </button>
+                <button class="tab-btn" data-tab="library">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/>
+                    </svg>
+                    Library
+                </button>
+            </div>
+
+            <!-- Recorder Tab -->
+            <section class="tab-content active" id="recorder-tab">
+                <div class="recorder-section">
+                    <!-- Waveform Visualizer -->
+                    <div class="visualizer-container">
+                        <canvas id="visualizer"></canvas>
+                        <div class="visualizer-text">
+                            <p id="visualizerStatus">Ready to Record</p>
+                        </div>
+                    </div>
+
+                    <!-- Recording Controls -->
+                    <div class="controls-section">
+                        <div class="input-level">
+                            <label>Microphone Level</label>
+                            <div class="level-display">
+                                <div class="level-bar" id="levelBar"></div>
+                            </div>
+                            <input type="range" id="micLevel" min="0" max="100" value="100" class="level-slider">
+                        </div>
+
+                        <div class="record-buttons">
+                            <button class="btn btn-secondary" id="startBtn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5h3V9h4v3h3l-5 5z"/>
+                                </svg>
+                                Start Recording
+                            </button>
+                            <button class="btn btn-danger" id="stopBtn" disabled>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4 11h-8v-2h8v2z"/>
+                                </svg>
+                                Stop Recording
+                            </button>
+                        </div>
+
+                        <div class="secondary-controls">
+                            <button class="btn btn-small" id="pauseBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                                </svg>
+                                Pause
+                            </button>
+                            <button class="btn btn-small" id="resumeBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                Resume
+                            </button>
+                            <button class="btn btn-small" id="discardBtn" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                </svg>
+                                Discard
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Playback Section -->
+                    <div class="playback-section" id="playbackSection" style="display: none;">
+                        <h3>Playback</h3>
+                        <audio id="recordedAudio" controls></audio>
+                        <div class="playback-buttons">
+                            <button class="btn btn-success" id="saveBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                </svg>
+                                Save Recording
+                            </button>
+                            <button class="btn btn-warning" id="retakeBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 10c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm10 0c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM7 19h10v-1H7v1zm0-5h10v-1H7v1z"/>
+                                </svg>
+                                Retake
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Karaoke Tab -->
+            <section class="tab-content" id="karaoke-tab">
+                <div class="karaoke-section">
+                    <h2>🎵 Karaoke Studio</h2>
+                    
+                    <!-- Two Column Layout -->
+                    <div class="karaoke-container">
+                        <!-- Left: Karaoke Library -->
+                        <div class="karaoke-library-panel">
+                            <h3>My Karaoke Collection</h3>
+                            
+                            <!-- Upload New Karaoke -->
+                            <div class="upload-area-small" id="uploadAreaSmall">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <p>Add Karaoke</p>
+                                <input type="file" id="karaokeFile" accept="audio/*" style="display: none;">
+                            </div>
+
+                            <!-- Karaoke List -->
+                            <div class="karaoke-list-container">
+                                <input type="text" id="searchKaraoke" placeholder="Search karaoke...">
+                                <div class="karaoke-list" id="karaokeList">
+                                    <p class="empty-state">No karaoke tracks yet. Upload one to get started!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Player & Recording -->
+                        <div class="karaoke-player-panel">
+                            <div class="karaoke-player" id="karaokePlayer" style="display: none;">
+                                <div class="karaoke-player-header">
+                                    <div>
+                                        <h3>🎤 Now Singing: <span id="trackName">Track Name</span></h3>
+                                        <p class="track-info" id="trackInfo"></p>
+                                    </div>
+                                    <button class="btn-remove-track" id="removeTrackBtn" title="Remove this track">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <audio id="karaokeAudio" controls></audio>
+
+                                <div class="karaoke-controls">
+                                    <div class="control-group">
+                                        <label>Background Volume</label>
+                                        <div class="volume-control">
+                                            <input type="range" id="bgVolume" min="0" max="100" value="50" class="volume-slider">
+                                            <span class="volume-value" id="bgVolumeValue">50%</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label>Vocal Volume</label>
+                                        <div class="volume-control">
+                                            <input type="range" id="vocalVolume" min="0" max="100" value="100" class="volume-slider">
+                                            <span class="volume-value" id="vocalVolumeValue">100%</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label>Playback Speed</label>
+                                        <div class="speed-buttons">
+                                            <button class="speed-btn" data-speed="0.75">0.75x</button>
+                                            <button class="speed-btn active" data-speed="1">Normal</button>
+                                            <button class="speed-btn" data-speed="1.25">1.25x</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label>Pitch Control</label>
+                                        <input type="range" id="pitchControl" min="-12" max="12" value="0" class="pitch-slider">
+                                        <span class="pitch-value" id="pitchValue">0 semitones</span>
+                                    </div>
+                                </div>
+
+                                <div class="karaoke-recording">
+                                    <div class="karaoke-recording-status">
+                                        <span id="karaokeRecordingTime">00:00</span>
+                                    </div>
+                                    <button class="btn btn-secondary" id="startKaraokeRecordBtn">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                                            <path d="M17 16.91c-1.48 1.46-3.51 2.36-5.7 2.36-2.2 0-4.23-.9-5.7-2.36"/>
+                                        </svg>
+                                        Start Singing
+                                    </button>
+                                    <button class="btn btn-danger" id="stopKaraokeRecordBtn" disabled>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M6 6h12v12H6z"/>
+                                        </svg>
+                                        Stop Singing
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="empty-karaoke-player" id="emptyKaraokePlayer">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                    <line x1="9" y1="9" x2="9" y2="9.01"></line>
+                                    <line x1="15" y1="9" x2="15" y2="9.01"></line>
+                                </svg>
+                                <h4>Select a Karaoke Track</h4>
+                                <p>Choose a track from your collection to start singing!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Library Tab -->
+            <section class="tab-content" id="library-tab">
+                <div class="library-section">
+                    <h2>📚 Recording Library</h2>
+                    <div class="library-controls">
+                        <input type="text" id="searchRecordings" placeholder="Search recordings...">
+                        <button class="btn btn-small" id="clearLibraryBtn">Clear All</button>
+                    </div>
+                    <div class="recordings-list" id="recordingsList">
+                        <p class="empty-state">No recordings yet. Start recording to build your library!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src=""script.js""></script>
+</body>
+</html>
